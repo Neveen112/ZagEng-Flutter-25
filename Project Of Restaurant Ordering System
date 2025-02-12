@@ -1,0 +1,114 @@
+abstract class Calculation {
+  double calculateCost();
+}
+
+class Person {
+  int id;
+  String name, phoneNumber, address;
+  Person(this.id, this.name, this.phoneNumber, this.address);
+}
+
+class MenuItem {
+  String itemName, category;
+  Map<String, int> itemInfo;
+
+  MenuItem(this.itemName, this.category, this.itemInfo);
+}
+
+class Menu {
+  List<MenuItem> items = [];
+
+  MenuItem addMenuItem(MenuItem menuItem) {
+    items.add(menuItem);
+    return menuItem;
+  }
+
+  void displayMenu() {
+    for (var item in items) {
+      print(item.itemName);
+    }
+  }
+}
+
+class OrderItem {
+  String itemName;
+  int quantity;
+  String reqSize;
+  MenuItem menuItem;
+
+  OrderItem(this.itemName, this.quantity, this.reqSize, this.menuItem);
+}
+
+class Order implements Calculation {
+  String orderId, orderTime;
+  List<OrderItem> orderItems;
+  Customer customer;
+
+  Order(this.orderId, this.orderItems, this.customer, this.orderTime);
+
+  @override
+  double calculateCost() {
+    double total = 0;
+    for (var item in orderItems) {
+      total += (item.menuItem.itemInfo[item.reqSize] ?? 0) * item.quantity;
+    }
+    return total;
+  }
+
+  void displayOrder() {
+    print("Order ID: $orderId");
+    print("Order time: $orderTime");
+    print("Customer: ${customer.name}");
+    print("Items:");
+    for (var item in orderItems) {
+      print("- ${item.quantity}x ${item.itemName} (${item.reqSize})");
+    }
+    print("Total cost: ${calculateCost()}");
+    print("=============================");
+  }
+}
+
+class Customer extends Person {
+  List<Order> orderHistory = [];
+
+  Customer(int id, String name, String phoneNumber, String address)
+      : super(id, name, phoneNumber, address);
+
+  void addOrder(Order order) {
+    orderHistory.add(order);
+  }
+}
+
+class Restaurant {
+  List<Order> orders = [];
+  List<Customer> customers = [];
+  Menu menu = Menu();
+}
+
+void main() {
+  Restaurant restaurant = Restaurant();
+
+  var pizza = restaurant.menu.addMenuItem(MenuItem(
+      "Pizza", "Fast Food", {"Large": 270, "Medium": 220, "Small": 150}));
+  var burger = restaurant.menu.addMenuItem(MenuItem(
+      "Burger", "Fast Food", {"Triple": 150, "Double": 115, "Single": 100}));
+
+  Customer customer1 = Customer(1, "Rewan", "122-090-9397", "123 Mans St");
+
+  Order order1 = Order(
+      "001",
+      [
+        OrderItem("Pizza", 2, "Medium", pizza),
+        OrderItem("Burger", 1, "Double", burger)
+      ],
+      customer1,
+      "1/31/2025 11:11 PM");
+
+  restaurant.orders.add(order1);
+  restaurant.customers.add(customer1);
+
+  print("\nOrders:");
+  for (var order in restaurant.orders) {
+    order.displayOrder();
+  }
+}
