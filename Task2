@@ -1,0 +1,229 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(BMIApp());
+}
+
+class BMIApp extends StatelessWidget {
+  const BMIApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: BMICalculator(),
+    );
+  }
+}
+
+class BMICalculator extends StatefulWidget {
+  const BMICalculator({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _BMICalculatorState createState() => _BMICalculatorState();
+}
+
+class _BMICalculatorState extends State<BMICalculator> {
+  bool isMale = true;
+  double height = 150.0;
+  int age = 18;
+  int weight = 50;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("BMI Calculator"),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => isMale = true),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: isMale ? Color(0xFF87B1E3) : Color(0xFFF48C8C),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.male, size: 80, color: Colors.white),
+                          Text(
+                            "Male",
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => isMale = false),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: !isMale ? Color(0xFF87B1E3) : Color(0xFFF48C8C),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.female, size: 80, color: Colors.white),
+                          Text(
+                            "Female",
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Color(0xFF87B1E3),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Height",
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                  Text(
+                    "${height.toStringAsFixed(1)} cm",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Slider(
+                    value: height,
+                    min: 100,
+                    max: 200,
+                    activeColor: Color(0xFFF48C8C),
+                    inactiveColor: Colors.white,
+                    onChanged: (value) => setState(() => height = value),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: buildCounterCard(
+                    "Age",
+                    age,
+                    () => setState(() => age--),
+                    () => setState(() => age++),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: buildCounterCard(
+                    "Weight",
+                    weight,
+                    () => setState(() => weight--),
+                    () => setState(() => weight++),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            height: 60,
+            child: ElevatedButton(
+              onPressed: () {
+                double bmi = weight / ((height / 100) * (height / 100));
+                showDialog(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: Text("BMI Result"),
+                        content: Text("Your BMI is ${bmi.toStringAsFixed(1)}"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text("OK"),
+                          ),
+                        ],
+                      ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFF48C8C),
+              ),
+              child: Text(
+                "CALCULATE",
+                style: TextStyle(fontSize: 20, color: Colors.white),
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget buildCounterCard(
+    String label,
+    int value,
+    VoidCallback onMinus,
+    VoidCallback onPlus,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(0xFF87B1E3),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(label, style: TextStyle(fontSize: 18, color: Colors.white)),
+          Text(
+            "$value",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: onMinus,
+                icon: Icon(Icons.remove, color: Colors.white),
+              ),
+              IconButton(
+                onPressed: onPlus,
+                icon: Icon(Icons.add, color: Colors.white),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
